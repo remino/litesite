@@ -4,16 +4,16 @@ set -euo pipefail
 target="${1:-}"
 
 if [[ -z "$target" ]]; then
-  echo "usage: $(basename "$0") DIST_DIR" >&2
-  exit 1
+	echo "usage: $(basename "$0") DIST_DIR" >&2
+	exit 1
 fi
 
 [[ -d "$target" ]] || exit 0
 
 find "$target" -type f \
-  \( -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '*.mjs' -o -name '*.cjs' -o -name '*.svg' -o -name '*.json' -o -name '*.xml' -o -name '*.txt' -o -name '*.webmanifest' -o -name '*.wasm' \) \
-  ! -name '*.br' ! -name '*.gz' \
-  -print0 |
-  while IFS= read -r -d '' file; do
-    brotli -q 11 -fk "$file"
-  done
+	\( -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '*.mjs' -o -name '*.cjs' -o -name '*.svg' -o -name '*.json' -o -name '*.xml' -o -name '*.txt' -o -name '*.webmanifest' -o -name '*.wasm' \) \
+	! -name '*.br' ! -name '*.gz' \
+	-print0 \
+	| while IFS= read -r -d '' file; do
+		brotli -q 11 -fk "$file"
+	done

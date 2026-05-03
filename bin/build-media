@@ -4,8 +4,8 @@ set -euo pipefail
 dist="${1:-}"
 
 if [[ -z "$dist" ]]; then
-  echo "usage: $(basename "$0") DIST_DIR" >&2
-  exit 1
+	echo "usage: $(basename "$0") DIST_DIR" >&2
+	exit 1
 fi
 
 [[ -d "$dist" ]] || exit 0
@@ -13,9 +13,9 @@ fi
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 while IFS= read -r -d '' file; do
-  rel="${file#"$dist"/}"
-  base="${rel%.*}"
+	rel="${file#"$dist"/}"
+	base="${rel%.*}"
 
-  "$script_dir/avif-to-jpg" "$file" "$dist/${base}.jpg"
-  "$script_dir/avif-to-webm" "$file" "$dist/${base}.webm"
+	"$script_dir/avif-to-jpg" "$file" "$dist/${base}.jpg"
+	"$script_dir/avif-to-webm" "$file" "$dist/${base}.webm"
 done < <(find "$dist" -type f -name '*.avif' -print0)

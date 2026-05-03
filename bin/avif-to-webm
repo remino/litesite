@@ -2,8 +2,8 @@
 set -euo pipefail
 
 if [[ $# -eq 0 ]]; then
-  echo "usage: $(basename "$0") file.avif [output.webm]" >&2
-  exit 1
+	echo "usage: $(basename "$0") file.avif [output.webm]" >&2
+	exit 1
 fi
 
 input="$1"

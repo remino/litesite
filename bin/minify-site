@@ -5,84 +5,84 @@ src="${1:-}"
 dist="${2:-}"
 
 if [[ -z "$src" || -z "$dist" ]]; then
-  echo "usage: $(basename "$0") SRC_DIR DIST_DIR" >&2
-  exit 1
+	echo "usage: $(basename "$0") SRC_DIR DIST_DIR" >&2
+	exit 1
 fi
 
 mkdir -p "$dist"
 
 copy_public() {
-  if [[ -d "$src/public" ]]; then
-    rm -rf "$dist/public"
-    mkdir -p "$dist"
-    rsync -a --delete "$src/public"/ "$dist/public"/
-  fi
+	if [[ -d "$src/public" ]]; then
+		rm -rf "$dist/public"
+		mkdir -p "$dist"
+		rsync -a --delete "$src/public"/ "$dist/public"/
+	fi
 }
 
 minify_html() {
-  local input="$1"
-  local output="$2"
+	local input="$1"
+	local output="$2"
 
-  mkdir -p "$(dirname "$output")"
-  npx --yes html-minifier-terser \
-    --collapse-whitespace \
-    --remove-comments \
-    --remove-redundant-attributes \
-    --remove-script-type-attributes \
-    --remove-style-link-type-attributes \
-    --minify-css true \
-    --minify-js true \
-    "$input" >"$output"
+	mkdir -p "$(dirname "$output")"
+	npx --yes html-minifier-terser \
+		--collapse-whitespace \
+		--remove-comments \
+		--remove-redundant-attributes \
+		--remove-script-type-attributes \
+		--remove-style-link-type-attributes \
+		--minify-css true \
+		--minify-js true \
+		"$input" > "$output"
 }
 
 minify_js() {
-  local input="$1"
-  local output="$2"
+	local input="$1"
+	local output="$2"
 
-  mkdir -p "$(dirname "$output")"
-  npx --yes terser "$input" \
-    --compress \
-    --mangle \
-    --comments false \
-    --output "$output"
+	mkdir -p "$(dirname "$output")"
+	npx --yes terser "$input" \
+		--compress \
+		--mangle \
+		--comments false \
+		--output "$output"
 }
 
 minify_css() {
-  local input="$1"
-  local output="$2"
+	local input="$1"
+	local output="$2"
 
-  mkdir -p "$(dirname "$output")"
-  npx --yes clean-css-cli -o "$output" "$input"
+	mkdir -p "$(dirname "$output")"
+	npx --yes clean-css-cli -o "$output" "$input"
 }
 
 copy_file() {
-  local input="$1"
-  local output="$2"
+	local input="$1"
+	local output="$2"
 
-  mkdir -p "$(dirname "$output")"
-  cp -p "$input" "$output"
+	mkdir -p "$(dirname "$output")"
+	cp -p "$input" "$output"
 }
 
 while IFS= read -r -d '' file; do
-  rel="${file#"$src"/}"
+	rel="${file#"$src"/}"
 
-  case "$rel" in
-    public/*)
-      continue
-      ;;
-    *.html)
-      minify_html "$file" "$dist/$rel"
-      ;;
-    *.js|*.mjs|*.cjs)
-      minify_js "$file" "$dist/$rel"
-      ;;
-    *.css)
-      minify_css "$file" "$dist/$rel"
-      ;;
-    *)
-      copy_file "$file" "$dist/$rel"
-      ;;
-  esac
+	case "$rel" in
+		public/*)
+			continue
+			;;
+		*.html)
+			minify_html "$file" "$dist/$rel"
+			;;
+		*.js | *.mjs | *.cjs)
+			minify_js "$file" "$dist/$rel"
+			;;
+		*.css)
+			minify_css "$file" "$dist/$rel"
+			;;
+		*)
+			copy_file "$file" "$dist/$rel"
+			;;
+	esac
 done < <(find "$src" -type f -print0)
 
 copy_public

@@ -5,8 +5,8 @@ src="${1:-}"
 dist="${2:-}"
 
 if [[ -z "$src" || -z "$dist" ]]; then
-  echo "usage: $(basename "$0") SRC_DIR DIST_DIR" >&2
-  exit 1
+	echo "usage: $(basename "$0") SRC_DIR DIST_DIR" >&2
+	exit 1
 fi
 
 rm -rf "$dist"
