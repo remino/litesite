@@ -11,25 +11,23 @@ fi
 
 mkdir -p "$dist"
 
-copy_public() {
-	if [[ -d "$src/public" ]]; then
-		rm -rf "$dist/public"
-		mkdir -p "$dist"
-		rsync -a --delete "$src/public"/ "$dist/public"/
-	fi
-}
-
 minify_html() {
 	local input="$1"
 	local output="$2"
 
 	mkdir -p "$(dirname "$output")"
 	npx --yes html-minifier-terser \
+		--collapse-boolean-attributes \
 		--collapse-whitespace \
+		--remove-attribute-quotes \
 		--remove-comments \
+		--remove-empty-attributes \
 		--remove-redundant-attributes \
 		--remove-script-type-attributes \
 		--remove-style-link-type-attributes \
+		--remove-optional-tags \
+		--remove-tag-whitespace \
+		--use-short-doctype \
 		--minify-css true \
 		--minify-js true \
 		"$input" > "$output"
@@ -65,24 +63,32 @@ copy_file() {
 
 while IFS= read -r -d '' file; do
 	rel="${file#"$src"/}"
+	target="$dist/$rel"
 
 	case "$rel" in
+		public/*.html)
+			minify_html "$file" "$target"
+			;;
+		public/*.js | public/*.mjs | public/*.cjs)
+			minify_js "$file" "$target"
+			;;
+		public/*.css)
+			minify_css "$file" "$target"
+			;;
 		public/*)
-			continue
+			copy_file "$file" "$target"
 			;;
 		*.html)
-			minify_html "$file" "$dist/$rel"
+			minify_html "$file" "$target"
 			;;
 		*.js | *.mjs | *.cjs)
-			minify_js "$file" "$dist/$rel"
+			minify_js "$file" "$target"
 			;;
 		*.css)
-			minify_css "$file" "$dist/$rel"
+			minify_css "$file" "$target"
 			;;
 		*)
-			copy_file "$file" "$dist/$rel"
+			copy_file "$file" "$target"
 			;;
 	esac
 done < <(find "$src" -type f -print0)
-
-copy_public
