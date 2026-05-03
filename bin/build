@@ -1,19 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root="${1:-}"
+src="${1:-}"
+dist="${2:-}"
 
-if [[ -z "$root" ]]; then
-  echo "usage: $(basename "$0") ROOT_DIR" >&2
+if [[ -z "$src" || -z "$dist" ]]; then
+  echo "usage: $(basename "$0") SRC_DIR DIST_DIR" >&2
   exit 1
 fi
 
-if [[ "$root" != /* ]]; then
-  root="$(cd "$root" && pwd)"
-fi
-
-rm -rf "$root/dist"
-"$root/bin/minify-site" "$root/src" "$root/dist"
-"$root/bin/build-media" "$root/dist"
-"$root/bin/build-brotli" "$root/dist"
-"$root/bin/build-gzip" "$root/dist"
+rm -rf "$dist"
+./bin/minify-site "$src" "$dist"
+./bin/build-media "$dist"
+./bin/build-brotli "$dist"
+./bin/build-gzip "$dist"

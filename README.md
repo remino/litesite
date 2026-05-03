@@ -31,8 +31,4 @@ This also works for files under `src/public/`, which publish to `dist/public/`.
 
 ## Deployment
 
-`bin/rsdeploy` reads the local `.env` file that already exists in the repo setup
-and uses `.rsdeploy-exclude` for the rsync filter.
-
-If you need a template for local setup, copy `.env.example` to `.env` and fill
-in the destination.
+`bin/deploy` uses `.rsdeploy-exclude` for the rsync filter.

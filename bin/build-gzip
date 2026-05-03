@@ -8,10 +8,6 @@ if [[ -z "$target" ]]; then
   exit 1
 fi
 
-if [[ "$target" != /* ]]; then
-  target="$PWD/$target"
-fi
-
 [[ -d "$target" ]] || exit 0
 
 find "$target" -type f \

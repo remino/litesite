@@ -1,26 +1,27 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
-root_dir := env_var_or_default("ROOT_DIR", justfile_directory())
+src_dir := "src"
+dist_dir := "dist"
 
 default: serve
 
 build:
-    ./bin/build '{{root_dir}}'
+    ./bin/build '{{src_dir}}' '{{dist_dir}}'
 
 clean:
-    rm -rf dist
+    rm -rf '{{dist_dir}}'
 
 serve:
-    ./bin/serve '{{root_dir}}'
+    ./bin/serve '{{src_dir}}'
 
 deploy: build
-    ./bin/rsdeploy '{{root_dir}}'
+    ./bin/deploy '{{dist_dir}}'
 
 compress:
-    ./bin/build-brotli '{{root_dir}}/dist'
-    ./bin/build-gzip '{{root_dir}}/dist'
+    ./bin/build-brotli '{{dist_dir}}'
+    ./bin/build-gzip '{{dist_dir}}'
 
 media:
-    ./bin/build-media '{{root_dir}}/dist'
+    ./bin/build-media '{{dist_dir}}'
 
 jpg *files:
     for file in {{files}}; do ./bin/avif-to-jpg "$file"; done

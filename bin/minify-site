@@ -9,14 +9,6 @@ if [[ -z "$src" || -z "$dist" ]]; then
   exit 1
 fi
 
-if [[ "$src" != /* ]]; then
-  src="$PWD/$src"
-fi
-
-if [[ "$dist" != /* ]]; then
-  dist="$PWD/$dist"
-fi
-
 mkdir -p "$dist"
 
 copy_public() {
