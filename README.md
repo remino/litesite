@@ -1,6 +1,6 @@
 # LiteSite
 
-Tiny-site boilerplate for pages that do not need a framework.
+Boilerplate for tiny site not needing a framework.
 
 By Rémino Rem <https://remino.net>, 2026
 
