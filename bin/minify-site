@@ -14,8 +14,10 @@ mkdir -p "$dist"
 minify_html() {
 	local input="$1"
 	local output="$2"
+	local tmp
 
 	mkdir -p "$(dirname "$output")"
+	tmp="$(mktemp)"
 	npx --yes html-minifier-terser \
 		--collapse-boolean-attributes \
 		--collapse-whitespace \
@@ -27,9 +29,32 @@ minify_html() {
 		--remove-style-link-type-attributes \
 		--remove-optional-tags \
 		--remove-tag-whitespace \
-		--minify-css true \
+		--minify-css false \
 		--minify-js true \
-		"$input" > "$output"
+		"$input" > "$tmp"
+
+	node - "$tmp" "$output" <<'NODE'
+const fs = require('node:fs')
+const { execFileSync } = require('node:child_process')
+
+const [input, output] = process.argv.slice(2)
+const html = fs.readFileSync(input, 'utf8')
+
+const minifyCss = (css) =>
+	execFileSync(
+		'npx',
+		['--yes', '-p', 'lightningcss-cli', 'lightningcss', '-m'],
+		{ input: css, encoding: 'utf8' },
+	).trim()
+
+const transformed = html.replace(/<style([^>]*)>([\s\S]*?)<\/style>/gi, (match, attrs, css) => {
+	return `<style${attrs}>${minifyCss(css)}</style>`
+})
+
+fs.writeFileSync(output, transformed)
+NODE
+
+	rm -f "$tmp"
 }
 
 minify_js() {
@@ -49,7 +74,7 @@ minify_css() {
 	local output="$2"
 
 	mkdir -p "$(dirname "$output")"
-	npx --yes clean-css-cli -o "$output" "$input"
+	npx --yes -p lightningcss-cli lightningcss -m "$input" -o "$output"
 }
 
 copy_file() {
