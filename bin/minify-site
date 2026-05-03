@@ -27,7 +27,6 @@ minify_html() {
 		--remove-style-link-type-attributes \
 		--remove-optional-tags \
 		--remove-tag-whitespace \
-		--use-short-doctype \
 		--minify-css true \
 		--minify-js true \
 		"$input" > "$output"
