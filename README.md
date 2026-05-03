@@ -2,6 +2,8 @@
 
 Tiny-site boilerplate for pages that do not need a framework.
 
+By Rémino Rem <https://remino.net>, 2026
+
 ## Layout
 
 - Source lives in `src/`
@@ -52,3 +54,7 @@ By default that creates `../newsite` from the current repository. Pass a second
 argument to choose a different destination directory.
 
 The generated site is also initialized as a new git repository.
+
+## Licence
+
+ISC. See [LICENSE](./LICENSE.txt) for details.
