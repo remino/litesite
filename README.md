@@ -34,7 +34,7 @@ This also works for files under `src/public/`, which publish to `dist/public/`.
 
 ## Deployment
 
-`bin/deploy` uses `.deploy-exclude` for the rsync filter.
+`bin/deploy` uses `.deploy-filter` for the rsync filter.
 
 ## New Site
 
