@@ -9,4 +9,4 @@ if [[ -z "$dist" ]]; then
 fi
 
 shift || true
-exec rsdeploy -s "$dist" -f .deploy-filter "$@"
+exec rsdeploy -s "$dist/" -f .deploy-filter "$@"
