@@ -41,4 +41,25 @@ while IFS= read -r -d '' file; do
   SITE_SLUG="$slug" perl -0pi -e 's/mysite/$ENV{SITE_SLUG}/g' "$file"
 done < <(find "$dest" -type f -print0)
 
+cat >"$dest/README.md" <<EOF
+# $slug
+
+This site was created with LiteSite.
+
+## Development
+
+```bash
+just serve
+just build
+just deploy
+```
+
+## Source
+
+Edit site content and assets under src/.
+The public site files live in src/public/.
+EOF
+
+git -C "$dest" init -q
+
 echo "Created $dest"

@@ -50,3 +50,5 @@ or:
 
 By default that creates `../newsite` from the current repository. Pass a second
 argument to choose a different destination directory.
+
+The generated site is also initialized as a new git repository.
