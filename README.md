@@ -15,7 +15,8 @@ By Rémino Rem <https://remino.net>, 2026
 - `just build` builds `dist/`, minifies HTML/CSS/JS, copies public files,
   generates AVIF derivatives, and writes Brotli and gzip variants
 - `just serve` runs a local livereload server from `src/`
-- `just deploy` builds and deploys `dist/` with `rsdeploy`
+- `just deploy` builds and deploys `dist/` with
+  [`rsdeploy`](https://github.com/remino/remutils/tree/main/rsdeploy)
 - `just compress` regenerates `.br` and `.gz` files for an existing `dist/`
 - `just jpg path/to/file.avif` converts AVIF files to JPG beside the source path
 - `just webm path/to/file.avif` converts AVIF files to WebM beside the source
