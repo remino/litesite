@@ -32,3 +32,21 @@ This also works for files under `src/public/`, which publish to `dist/public/`.
 ## Deployment
 
 `bin/deploy` uses `.rsdeploy-exclude` for the rsync filter.
+
+## New Site
+
+To copy this boilerplate into a new site and rename the `mysite` paths and
+references, run:
+
+```bash
+just init newsite
+```
+
+or:
+
+```bash
+./bin/init newsite
+```
+
+By default that creates `../newsite` from the current repository. Pass a second
+argument to choose a different destination directory.

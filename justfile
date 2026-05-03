@@ -23,6 +23,9 @@ compress:
 media:
     ./bin/build-media '{{dist_dir}}'
 
+init slug:
+    ./bin/init '{{slug}}'
+
 jpg *files:
     for file in {{files}}; do ./bin/avif-to-jpg "$file"; done
 
