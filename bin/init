@@ -41,8 +41,8 @@ while IFS= read -r -d '' file; do
   SITE_SLUG="$slug" perl -0pi -e 's/mysite/$ENV{SITE_SLUG}/g' "$file"
 done < <(find "$dest" -type f -print0)
 
-cat >"$dest/README.md" <<EOF
-# $slug
+cat >"$dest/README.md" <<'EOF'
+# __SITE_SLUG__
 
 This site was created with LiteSite.
 
@@ -59,6 +59,8 @@ just deploy
 Edit site content and assets under src/.
 The public site files live in src/public/.
 EOF
+
+SITE_SLUG="$slug" perl -0pi -e 's/__SITE_SLUG__/$ENV{SITE_SLUG}/g' "$dest/README.md"
 
 git -C "$dest" init -q
 
