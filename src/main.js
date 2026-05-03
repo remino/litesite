@@ -1,5 +1,9 @@
-(function () {
-  "use strict";
+;(function () {
+	'use strict'
 
-  document.documentElement.classList.add("js");
-})();
+	const main = () => {
+		document.documentElement.classList.add('js')
+	}
+
+	main()
+})()
