@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+root="${1:-}"
+
+if [[ -z "$root" ]]; then
+  echo "usage: $(basename "$0") ROOT_DIR" >&2
+  exit 1
+fi
+
+if [[ "$root" != /* ]]; then
+  root="$(cd "$root" && pwd)"
+fi
 
 rm -rf "$root/dist"
-"$root/bin/minify-site"
-"$root/bin/build-media"
+"$root/bin/minify-site" "$root/src" "$root/dist"
+"$root/bin/build-media" "$root/dist"
 "$root/bin/build-brotli" "$root/dist"
 "$root/bin/build-gzip" "$root/dist"

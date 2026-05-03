@@ -1,9 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-src="$root/src"
-dist="$root/dist"
+src="${1:-}"
+dist="${2:-}"
+
+if [[ -z "$src" || -z "$dist" ]]; then
+  echo "usage: $(basename "$0") SRC_DIR DIST_DIR" >&2
+  exit 1
+fi
+
+if [[ "$src" != /* ]]; then
+  src="$PWD/$src"
+fi
+
+if [[ "$dist" != /* ]]; then
+  dist="$PWD/$dist"
+fi
 
 mkdir -p "$dist"
 

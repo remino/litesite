@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-target="${1:-$root/dist}"
+target="${1:-}"
+
+if [[ -z "$target" ]]; then
+  echo "usage: $(basename "$0") DIST_DIR" >&2
+  exit 1
+fi
 
 if [[ "$target" != /* ]]; then
-  target="$root/$target"
+  target="$PWD/$target"
 fi
 
 [[ -d "$target" ]] || exit 0

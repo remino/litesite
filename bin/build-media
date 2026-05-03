@@ -1,16 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-src="$root/src"
-dist="$root/dist"
+dist="${1:-}"
+
+if [[ -z "$dist" ]]; then
+  echo "usage: $(basename "$0") DIST_DIR" >&2
+  exit 1
+fi
+
+if [[ "$dist" != /* ]]; then
+  dist="$PWD/$dist"
+fi
 
 [[ -d "$dist" ]] || exit 0
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 while IFS= read -r -d '' file; do
-  rel="${file#"$src"/}"
+  rel="${file#"$dist"/}"
   base="${rel%.*}"
 
-  "$root/bin/avif-to-jpg" "$file" "$dist/${base}.jpg"
-  "$root/bin/avif-to-webm" "$file" "$dist/${base}.webm"
-done < <(find "$src" -type f -name '*.avif' -print0)
+  "$script_dir/avif-to-jpg" "$file" "$dist/${base}.jpg"
+  "$script_dir/avif-to-webm" "$file" "$dist/${base}.webm"
+done < <(find "$dist" -type f -name '*.avif' -print0)
