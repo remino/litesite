@@ -33,7 +33,7 @@ minify_html() {
 		--minify-js true \
 		"$input" > "$tmp"
 
-	node - "$tmp" "$output" <<'NODE'
+	node - "$tmp" "$output" << 'NODE'
 const fs = require('node:fs')
 const { execFileSync } = require('node:child_process')
 
