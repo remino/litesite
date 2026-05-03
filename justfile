@@ -14,6 +14,9 @@ serve:
     ./bin/serve '{{src_dir}}'
 
 deploy: build
+    ./bin/deploy '{{dist_dir}}' -w
+
+deploy-dryrun: build
     ./bin/deploy '{{dist_dir}}'
 
 compress:

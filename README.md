@@ -17,6 +17,7 @@ By Rémino Rem <https://remino.net>, 2026
 - `just serve` runs `live-server` on `src/public/`
 - `just deploy` builds and deploys `dist/` with
   [`rsdeploy`](https://github.com/remino/remutils/tree/main/rsdeploy)
+- `just deploy-dryrun` builds and previews the deploy without writing changes
 - `just compress` regenerates `.br` and `.gz` files for an existing `dist/`
 - `just jpg path/to/file.avif` converts AVIF files to JPG beside the source path
 - `just webm path/to/file.avif` converts AVIF files to WebM beside the source
