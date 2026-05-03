@@ -1,4 +1,4 @@
-# Litesite
+# LiteSite
 
 Tiny-site boilerplate for pages that do not need a framework.
 

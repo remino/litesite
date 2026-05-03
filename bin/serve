@@ -2,4 +2,4 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-exec npx --yes live-server "$root/src" --host=0.0.0.0 --port="${PORT:-8080}" --no-browser
+exec npx --yes live-server "$root/src/public" --host=0.0.0.0 --port="${PORT:-8080}" --no-browser
