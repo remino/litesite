@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -eq 0 ]]; then
+  echo "usage: $(basename "$0") file.avif [output.jpg]" >&2
+  exit 1
+fi
+
+input="$1"
+output="${2:-${input%.*}.jpg}"
+
+[[ -f "$input" ]] || exit 0
+mkdir -p "$(dirname "$output")"
+magick "$input" -auto-orient -background white -alpha remove -strip -quality 85 "$output"

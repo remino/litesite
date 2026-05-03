@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+src="$root/src"
+dist="$root/dist"
+
+[[ -d "$dist" ]] || exit 0
+
+while IFS= read -r -d '' file; do
+  rel="${file#"$src"/}"
+  base="${rel%.*}"
+
+  "$root/bin/avif-to-jpg" "$file" "$dist/${base}.jpg"
+  "$root/bin/avif-to-webm" "$file" "$dist/${base}.webm"
+done < <(find "$src" -type f -name '*.avif' -print0)

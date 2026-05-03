@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$root"
+
+exec rsdeploy -s "${RSDEPLOY_SRC:-dist}" -f "${RSDEPLOY_FILTER:-.rsdeploy-exclude}" "$@"

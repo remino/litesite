@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+rm -rf "$root/dist"
+"$root/bin/minify-site"
+"$root/bin/build-media"
+"$root/bin/build-brotli" "$root/dist"
+"$root/bin/build-gzip" "$root/dist"
