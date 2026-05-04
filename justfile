@@ -1,36 +1,33 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
-src_dir := "src"
-dist_dir := "dist"
 
 default: serve
 
 build:
-    ./bin/build '{{src_dir}}' '{{dist_dir}}'
+    ./litesite build
 
 clean:
-    rm -rf '{{dist_dir}}'
+    ./litesite clean
 
 serve:
-    ./bin/serve '{{src_dir}}'
+    ./litesite serve
 
-deploy: build
-    ./bin/deploy '{{dist_dir}}' -w
-
-deploy-dryrun: build
-    ./bin/deploy '{{dist_dir}}'
+deploy:
+    ./litesite deploy
 
 compress:
-    ./bin/build-brotli '{{dist_dir}}'
-    ./bin/build-gzip '{{dist_dir}}'
+    ./litesite compress
 
 media:
-    ./bin/build-media '{{dist_dir}}'
+    ./litesite media
 
-init slug:
-    ./bin/init '{{slug}}'
+new slug="":
+    ./litesite new '{{slug}}'
+
+init slug="":
+    ./litesite init '{{slug}}'
 
 jpg *files:
-    for file in {{files}}; do ./bin/avif-to-jpg "$file"; done
+    ./litesite jpg {{files}}
 
-webm *files:
-    for file in {{files}}; do ./bin/avif-to-webm "$file"; done
+webp *files:
+    ./litesite webp {{files}}

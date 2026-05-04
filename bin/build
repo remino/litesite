@@ -9,8 +9,56 @@ if [[ -z "$src" || -z "$dist" ]]; then
 	exit 1
 fi
 
+if [[ -f ".env" ]]; then
+	old_brotli="${LITESITE_BUILD_BROTLI-__unset__}"
+	old_gzip="${LITESITE_BUILD_GZIP-__unset__}"
+	old_avif_jpeg="${LITESITE_BUILD_AVIF_JPEG-__unset__}"
+	old_avif_webp="${LITESITE_BUILD_AVIF_WEBP-__unset__}"
+	set -a
+	# shellcheck disable=SC1091
+	. ./.env
+	set +a
+	if [[ "$old_brotli" != __unset__ ]]; then
+		export LITESITE_BUILD_BROTLI="$old_brotli"
+	fi
+	if [[ "$old_gzip" != __unset__ ]]; then
+		export LITESITE_BUILD_GZIP="$old_gzip"
+	fi
+	if [[ "$old_avif_jpeg" != __unset__ ]]; then
+		export LITESITE_BUILD_AVIF_JPEG="$old_avif_jpeg"
+	fi
+	if [[ "$old_avif_webp" != __unset__ ]]; then
+		export LITESITE_BUILD_AVIF_WEBP="$old_avif_webp"
+	fi
+fi
+
+env_enabled() {
+	local name="$1"
+	local value="${!name:-1}"
+
+	case "${value,,}" in
+		0 | false | no | off | "")
+			return 1
+			;;
+		*)
+			return 0
+			;;
+	esac
+}
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 rm -rf "$dist"
-./bin/minify-site "$src" "$dist"
-./bin/build-media "$dist"
-./bin/build-brotli "$dist"
-./bin/build-gzip "$dist"
+"$script_dir/minify-site" "$src" "$dist"
+if env_enabled LITESITE_BUILD_AVIF_JPEG; then
+	"$script_dir/build-media" "$dist" jpg
+fi
+if env_enabled LITESITE_BUILD_AVIF_WEBP; then
+	"$script_dir/build-media" "$dist" webp
+fi
+if env_enabled LITESITE_BUILD_BROTLI; then
+	"$script_dir/build-brotli" "$dist"
+fi
+if env_enabled LITESITE_BUILD_GZIP; then
+	"$script_dir/build-gzip" "$dist"
+fi

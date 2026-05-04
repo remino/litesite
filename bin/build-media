@@ -2,6 +2,7 @@
 set -euo pipefail
 
 dist="${1:-}"
+mode="${2:-all}"
 
 if [[ -z "$dist" ]]; then
 	echo "usage: $(basename "$0") DIST_DIR" >&2
@@ -12,10 +13,32 @@ fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+build_jpg=1
+build_webp=1
+
+	case "$mode" in
+		all | both | "")
+			;;
+		jpg)
+			build_webp=0
+			;;
+		webp | webm)
+			build_jpg=0
+			;;
+		*)
+			echo "litesite: invalid media mode: $mode" >&2
+			exit 1
+			;;
+	esac
+
 while IFS= read -r -d '' file; do
 	rel="${file#"$dist"/}"
 	base="${rel%.*}"
 
-	"$script_dir/avif-to-jpg" "$file" "$dist/${base}.jpg"
-	"$script_dir/avif-to-webm" "$file" "$dist/${base}.webm"
+	if (( build_jpg )); then
+		"$script_dir/avif-to-jpg" "$file" "$dist/${base}.jpg"
+	fi
+	if (( build_webp )); then
+		"$script_dir/avif-to-webp" "$file" "$dist/${base}.webp"
+	fi
 done < <(find "$dist" -type f -name '*.avif' -print0)

@@ -1,0 +1,203 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VERSION="1.0.0"
+SCRIPT_NAME="$(basename "$0")"
+
+usage() {
+	cat <<'EOF'
+litesite 1.0.0
+
+USAGE: litesite [<options>] [<command> [<args...>]]
+
+Create and work with tiny static sites that keep their source in src/ and
+publish to dist/.
+
+COMMANDS:
+
+	build               Build dist/ from src/
+	clean               Remove dist/
+	serve               Run a local preview server
+	deploy              Build and deploy dist/; use -n for a dry-run
+	compress            Regenerate Brotli and gzip files
+	media               Regenerate AVIF JPG and WebP derivatives
+	new <slug> [<dest>]  Create a new site scaffold
+	init <slug> [<dest>] Alias for `new`
+	jpg <files...>      Convert AVIF files to JPG
+	webp <files...>     Convert AVIF files to WebP
+
+OPTIONS:
+
+	-C <dir>    Run the command against a different site root.
+	-h          Show this help screen.
+	-v          Show version information.
+
+When no command is supplied, this screen is shown.
+EOF
+}
+
+resolve_script_dir() {
+	local source="${BASH_SOURCE[0]}"
+
+	while [[ -h "$source" ]]; do
+		local dir
+		dir="$(cd -P "$(dirname "$source")" && pwd)"
+		source="$(readlink "$source")"
+		[[ "$source" == /* ]] || source="$dir/$source"
+	done
+
+	cd -P "$(dirname "$source")" && pwd
+}
+
+ensure_site_root() {
+	local root="$1"
+	local missing=0
+	local required
+
+	for required in src .deploy-filter justfile .editorconfig; do
+		if [[ ! -e "$root/$required" ]]; then
+			echo "litesite: expected $root/$required" >&2
+			missing=1
+		fi
+	done
+
+	(( missing == 0 )) || exit 1
+}
+
+script_dir="$(resolve_script_dir)"
+site_root="$PWD"
+
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		-C | --cwd)
+			[[ $# -ge 2 ]] || { echo "litesite: missing argument for $1" >&2; exit 1; }
+			site_root="$2"
+			shift 2
+			;;
+		-h | --help)
+			usage
+			exit 0
+			;;
+		-v | --version)
+			echo "$SCRIPT_NAME $VERSION"
+			exit 0
+			;;
+		--)
+			shift
+			break
+			;;
+		-*)
+			echo "litesite: unknown option: $1" >&2
+			exit 1
+			;;
+		*)
+			break
+			;;
+	esac
+done
+
+command="${1:-help}"
+if [[ $# -gt 0 ]]; then
+	shift
+fi
+
+case "$command" in
+	build)
+		ensure_site_root "$site_root"
+		(
+			cd "$site_root"
+			"$script_dir/bin/build" src dist
+		)
+		;;
+	clean)
+		ensure_site_root "$site_root"
+		rm -rf "$site_root/dist"
+		;;
+	serve)
+		ensure_site_root "$site_root"
+		(
+			cd "$site_root"
+			"$script_dir/bin/serve" src
+		)
+		;;
+	help)
+		usage
+		;;
+	deploy)
+		ensure_site_root "$site_root"
+		deploy_mode="wet"
+		if [[ "${1:-}" == "-n" ]]; then
+			deploy_mode="dry"
+			shift
+		fi
+
+		if ! command -v rsdeploy >/dev/null 2>&1; then
+			echo "litesite: rsdeploy is required for deploy" >&2
+			exit 1
+		fi
+
+		(
+			cd "$site_root"
+			"$script_dir/bin/build" src dist
+			if [[ "$deploy_mode" == wet ]]; then
+				"$script_dir/bin/deploy" dist -w "$@"
+			else
+				"$script_dir/bin/deploy" dist "$@"
+			fi
+		)
+		;;
+	compress)
+		ensure_site_root "$site_root"
+		(
+			cd "$site_root"
+			"$script_dir/bin/build-brotli" dist
+			"$script_dir/bin/build-gzip" dist
+		)
+		;;
+	media)
+		ensure_site_root "$site_root"
+		(
+			cd "$site_root"
+			"$script_dir/bin/build-media" dist
+		)
+		;;
+	new | init)
+		slug="${1:-}"
+		dest="${2:-}"
+
+		if [[ -z "$slug" ]]; then
+			echo "USAGE: litesite new <site_slug> [<dest_dir>]" >&2
+			exit 1
+		fi
+
+		(
+			cd "$site_root"
+			"$script_dir/bin/init" "$slug" "$dest"
+		)
+		;;
+	jpg)
+		if [[ $# -eq 0 ]]; then
+			echo "usage: litesite jpg file.avif [file.avif...]" >&2
+			exit 1
+		fi
+
+		for file in "$@"; do
+			"$script_dir/bin/avif-to-jpg" "$file"
+		done
+		;;
+	webp | webm)
+		if [[ $# -eq 0 ]]; then
+			echo "usage: litesite webp file.avif [file.avif...]" >&2
+			exit 1
+		fi
+
+		for file in "$@"; do
+			"$script_dir/bin/avif-to-webp" "$file"
+		done
+		;;
+	*)
+		echo "litesite: unknown command: $command" >&2
+		usage >&2
+		exit 1
+		;;
+esac

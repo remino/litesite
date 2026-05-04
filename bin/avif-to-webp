@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -eq 0 ]]; then
+	echo "usage: $(basename "$0") file.avif [output.webp]" >&2
+	exit 1
+fi
+
+input="$1"
+output="${2:-${input%.*}.webp}"
+
+[[ -f "$input" ]] || exit 0
+mkdir -p "$(dirname "$output")"
+ffmpeg -y -hide_banner -loglevel error -i "$input" -an -sn -c:v libwebp -lossless 0 -q:v 80 "$output"

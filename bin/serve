@@ -8,4 +8,7 @@ if [[ -z "$src" ]]; then
 	exit 1
 fi
 
-exec npx --yes live-server "$src/public" --host=0.0.0.0 --port="${PORT:-8080}" --no-browser
+site_root="$(cd "$(dirname "$src")" && pwd -P)"
+
+npx --yes live-server "$src/public" --host=0.0.0.0 --port="${PORT:-8080}" --no-browser 2>&1 \
+	| sed -u "s|$site_root/|./|g"
